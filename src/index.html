@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'"><title>Focus Dock</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="blue-mini.css"></head>
+<body>
+<div class="app">
+<header><div class="brand"><span class="logo">◷</span><div>focus dock<span class="subtitle">A little structure. A lot more focus.</span></div></div><div class="window-tools"><select id="dock" aria-label="Window position"><option value="none">Free window</option><option value="left">Dock left</option><option value="right">Dock right</option></select><button id="compact" class="subtle" title="Always-on-top compact timer">↗ Compact</button></div></header>
+<main><section class="workspace"><div class="heading"><div><div class="eyebrow" id="today"></div><h1>Make room for focus<span>.</span></h1><p>One task, one session, one step forward.</p></div></div>
+<div class="stats"><div><strong id="open-count">0</strong><span>tasks to go</span></div><div><strong id="done-count">0</strong><span>tasks completed</span></div><div><strong id="sessions-count">0</strong><span>sessions today</span></div></div>
+<div class="board-toolbar"><div class="tabs"><button id="board-view" class="active">▦ Board</button><button id="list-view">☷ List</button></div><span class="muted">Your space, your pace</span></div>
+<form id="task-form"><input id="task-input" maxlength="180" placeholder="What would you like to get done?" aria-label="New task" required><button class="primary" type="submit">+ Add task</button></form>
+<div id="board" class="board" aria-label="Task board"></div><p id="storage-error" role="alert" hidden>Your changes could not be saved. Keep this window open and export your tasks.</p>
+<footer><span>Small steps still move you forward.</span><div><button id="export" class="text-button">Export tasks</button><label class="text-button import">Import tasks<input id="import" type="file" accept="application/json" hidden></label></div></footer>
+</section>
+<aside class="timer-panel"><div class="timer-top"><span class="eyebrow">THE FOCUS CORNER</span><button id="expand" class="text-button" hidden>↙ Expand</button><span class="live-dot"></span></div><div class="timer-tabs"><button data-mode="focus" class="active">Focus</button><button data-mode="short">Short break</button><button data-mode="long">Long break</button></div>
+<div class="timer-face"><div class="timer-inner"><span id="timer-label">TIME TO FOCUS</span><div id="time" role="timer">25:00</div><span id="timer-hint">You've got this.</span></div></div>
+<div class="timer-actions"><button id="start" class="primary">▶ Start session</button><button id="reset" class="reset" aria-label="Reset timer">↺</button></div><p id="announcement" role="status" aria-live="polite"></p>
+<div class="focused-task"><div class="eyebrow">WORKING ON</div><p id="active-task">Choose a task to give it your full attention.</p><span>Click ◎ on any task to focus on it.</span></div>
+<div class="session-track"><div><span>Today's rhythm</span><strong id="rhythm-count">0 sessions</strong></div><div id="session-dots"></div><p>A longer break after every 4 focus sessions.</p></div>
+<details class="settings"><summary>Timer settings</summary><div class="settings-fields"><label>Focus<input id="duration-focus" type="number" min="1" max="180" value="25"></label><label>Short break<input id="duration-short" type="number" min="1" max="180" value="5"></label><label>Long break<input id="duration-long" type="number" min="1" max="180" value="15"></label></div><p>Minutes · changes reset a paused timer.</p></details>
+<div class="aside-note">✳ &nbsp; Focus on what matters.<br>The rest can wait.</div></aside></main></div>
+<script src="core.js"></script><script src="app.js"></script><script src="mini.js"></script></body></html>

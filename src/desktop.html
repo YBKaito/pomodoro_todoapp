@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Focus Dock</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1527;--panel:#14243d;--line:#304b70;--text:#eaf3ff;--muted:#9ab1d2;--blue:#8cc8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px 'Segoe UI',sans-serif}button,input,select{font:inherit}button{cursor:pointer;background:#29496e;color:var(--text);border:0;border-radius:8px;padding:10px 13px}button:hover{filter:brightness(1.15)}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:3px}input,select{background:#0e1c32;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px;min-width:0}[hidden]{display:none!important}.primary{background:var(--blue);color:#123353;font-weight:650}header{padding:22px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:650}.brand span{color:var(--blue)}.muted{color:var(--muted);font-size:12px}main{display:grid;grid-template-columns:minmax(0,1fr) 310px;min-height:calc(100vh - 84px)}.workspace{padding:32px}h1{font-weight:550;font-size:33px;letter-spacing:-1px;margin:10px 0}h1 span{color:var(--blue)}.stats{display:flex;gap:35px;margin:25px 0;padding:20px 0;border-block:1px solid var(--line)}.stats strong{font-size:25px;font-weight:450;display:block}.stats small{color:var(--muted)}.toolbar{display:flex;justify-content:space-between;margin-bottom:15px}.active{background:#3b6c9e!important;color:#fff}form{display:flex;gap:8px}#taskTitle{flex:1}.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}.board.list{grid-template-columns:1fr}.column{background:#101e34;border:1px solid #273f60;border-radius:11px;padding:12px;min-height:180px;min-width:0}.column.over{border-color:var(--blue)}.column h2{font-size:12px;font-weight:550;margin:3px 0 16px}.card{background:#1b3050;border:1px solid #345177;border-radius:9px;padding:12px;margin-bottom:10px}.card.selected{border-color:var(--blue)}.taskName{line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}.done .taskName{text-decoration:line-through;color:var(--muted)}.actions{display:flex;gap:4px;margin-top:12px}.actions button{padding:4px 6px}.actions select{flex:1;font-size:10px;padding:5px}.empty{font-size:11px;color:var(--muted);line-height:1.8;padding:20px 0}footer{margin-top:22px;display:flex;justify-content:space-between;gap:10px;align-items:center}.timerPanel{background:var(--panel);padding:28px 22px;border-left:1px solid var(--line)}.eyebrow{font-size:10px;color:var(--muted);letter-spacing:1.7px}.modes{display:flex;gap:4px;margin:22px 0}.modes button{flex:1;font-size:10px;padding:8px 5px}.face{border:3px solid #37577e;border-top-color:var(--blue);border-right-color:var(--blue);border-radius:50%;width:220px;height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:10px auto 25px}.clock{font-size:51px;font-weight:350;font-variant-numeric:tabular-nums;letter-spacing:-2px}.controls{display:flex;gap:7px}.controls .primary{flex:1}.message{font-size:11px;color:var(--blue);line-height:1.7;min-height:35px}.focusTask{background:#1b3150;padding:16px;border:1px solid var(--line);border-radius:9px;margin-top:18px;overflow-wrap:anywhere;line-height:1.7}details{margin-top:25px;color:var(--muted);font-size:11px}summary{cursor:pointer}.settings{display:flex;gap:7px;margin-top:12px}.settings label{flex:1;font-size:10px}.settings input{width:100%;margin-top:5px;padding:7px}.note{font-size:11px;color:var(--muted);text-align:center;margin-top:30px;line-height:1.9}#storageWarning{color:#ffc8a1;font-size:12px}
+#mini{position:fixed;right:18px;bottom:18px;width:350px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto;background:#14243d;border:1px solid #4d78a7;border-radius:16px;padding:16px;box-shadow:0 20px 80px #0009}.miniHead{display:flex;align-items:center;justify-content:space-between}.miniHead button{font-size:11px;padding:7px}.miniClock{text-align:center;font-size:49px;font-variant-numeric:tabular-nums;padding:4px 0 15px}.miniModes{margin:16px 0 8px}#sticky{border-top:1px solid var(--line);padding-top:14px}#stickyForm{margin:13px 0}#stickyTitle{width:0;flex:1}.stickyRow{display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a4161;padding:10px 0}.stickyRow label{display:flex;gap:8px;flex:1;min-width:0;align-items:flex-start;cursor:pointer}.stickyRow span{overflow-wrap:anywhere;line-height:1.6}.stickyRow input{accent-color:var(--blue);margin-top:4px}.stickyRow input:checked+span{text-decoration:line-through;color:var(--muted)}.stickyRow button{padding:4px 8px}body.miniOpen>header,body.miniOpen>main{display:none}
+@media(max-width:1000px){.board{grid-template-columns:1fr}.column{min-height:100px}}@media(max-width:650px){main{display:flex;flex-direction:column}.timerPanel{order:-1;border-left:0;border-bottom:1px solid var(--line)}.workspace{padding:24px 18px}.face{width:170px;height:170px}.focusTask,.note{display:none}.stats{gap:25px}header{padding:16px}.brand{font-size:20px}footer{flex-wrap:wrap}}
+body.desktopMini #mini{position:static;width:100%;max-width:none;max-height:none;min-height:100vh;border-radius:0;border:0;box-shadow:none}
+body.desktopMini .miniHead{-webkit-app-region:drag}body.desktopMini .miniHead button{-webkit-app-region:no-drag}
+</style>
+</head>
+<body>
+<header><div class="brand"><span>◷</span> focus dock</div><button id="openMini">Mini sticky note ↗</button></header>
+<main>
+<section class="workspace">
+<div class="eyebrow" id="date"></div><h1>Make room for focus<span>.</span></h1><p class="muted">One task, one session, one step forward.</p>
+<div class="stats"><div><strong id="openCount">0</strong><small>tasks to go</small></div><div><strong id="doneCount">0</strong><small>completed</small></div><div><strong id="sessionCount">0</strong><small>sessions today</small></div></div>
+<div class="toolbar"><div><button id="boardView" class="active">▦ Board</button> <button id="listView">☷ List</button></div></div>
+<form id="taskForm"><input id="taskTitle" aria-label="New task" placeholder="What would you like to get done?" maxlength="180" required><button class="primary">+ Add task</button></form>
+<div class="board" id="board"></div>
+<p id="storageWarning" hidden>Browser storage is unavailable. Export your tasks before closing.</p>
+<footer><span class="muted">Small steps still move you forward.</span><button id="export">Export tasks</button></footer>
+</section>
+<aside class="timerPanel">
+<div class="eyebrow">THE FOCUS CORNER</div>
+<div class="modes"><button data-mode="focus">Pomodoro</button><button data-mode="short">Short break</button><button data-mode="long">Long break</button></div>
+<div class="face"><div class="eyebrow" id="timerLabel">TIME TO FOCUS</div><div class="clock" id="clock" role="timer">25:00</div><span class="muted">One step at a time.</span></div>
+<div class="controls"><button class="primary" id="play">▶ Start</button><button id="stop">Stop / reset</button></div>
+<p class="message" id="message" role="status"></p>
+<div class="focusTask"><div class="eyebrow">WORKING ON</div><p id="focused">Choose ◎ on a task to focus on it.</p></div>
+<details><summary>Timer settings</summary><div class="settings"><label>Focus<input id="focusMinutes" type="number" min="1" max="180"></label><label>Short break<input id="shortMinutes" type="number" min="1" max="180"></label><label>Long break<input id="longMinutes" type="number" min="1" max="180"></label></div><p>Minutes. Applies on reset or next session.</p></details>
+<p class="note">✳ Focus on what matters.<br>The rest can wait.</p>
+</aside>
+</main>
+<section id="mini" aria-label="Mini sticky note" hidden>
+<div class="miniHead"><strong>◷ Focus Dock</strong><div><button id="mainApp">Main app</button> <button id="closeMini" aria-label="Dismiss mini view">×</button></div></div>
+<div class="modes miniModes"><button data-mini-mode="focus">Pomodoro</button><button data-mini-mode="short">Short break</button><button data-mini-mode="long">Long break</button></div>
+<div class="miniClock" id="miniClock" role="timer">25:00</div>
+<div class="controls"><button id="miniPlay" class="primary">▶ Start</button><button id="toggleNote" aria-expanded="true">Hide note</button></div>
+<p id="miniMessage" class="message" role="status"></p>
+<section id="sticky"><div class="eyebrow">MY STICKY NOTE</div><form id="stickyForm"><input id="stickyTitle" aria-label="New sticky-note task" placeholder="Add a quick task…" maxlength="180" required><button aria-label="Add task to note">+</button></form><div id="stickyTasks"></div></section>
+</section>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), key='focus-dock-blue-v2';
+const modes=['focus','short','long'], statuses=[['todo','To do'],['doing','In progress'],['done','Done']];
+const today=()=>new Date().toLocaleDateString();
+const uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
+let s={tasks:[],selected:null,sessions:0,day:today(),minutes:{focus:25,short:5,long:15},view:'board',timer:{mode:'focus',left:1500,running:false,end:0,engaged:false}};
+try{
+ const old=JSON.parse(localStorage.getItem(key));
+ if(old&&Array.isArray(old.tasks)&&old.minutes&&old.timer){
+  s.tasks=old.tasks.filter(t=>t&&typeof t.id==='string'&&typeof t.title==='string'&&statuses.some(([v])=>v===t.status));
+  s.selected=old.selected;s.sessions=Number.isInteger(old.sessions)&&old.sessions>=0?old.sessions:0;s.day=old.day;
+  s.view=old.view==='list'?'list':'board';
+  for(const mode of modes){const n=old.minutes[mode];if(Number.isInteger(n)&&n>=1&&n<=180)s.minutes[mode]=n;}
+  const t=old.timer;if(modes.includes(t.mode)&&Number.isFinite(t.left)&&t.left>=0&&t.left<=10800&&Number.isFinite(t.end)&&typeof t.running==='boolean')s.timer={...t,engaged:t.engaged===true};
+ }
+}catch{$('storageWarning').hidden=false;}
+let mini=false,note=true,lastLock;
+function save(){try{localStorage.setItem(key,JSON.stringify(s));$('storageWarning').hidden=true;}catch{$('storageWarning').hidden=false;}}
+function checkDay(){if(s.day!==today()){s.day=today();s.sessions=0;save();}}
+function left(){return s.timer.running?Math.max(0,Math.ceil((s.timer.end-Date.now())/1000)):s.timer.left;}
+function locked(){return s.timer.mode==='focus'&&s.timer.engaged;}
+function commit(){save();render();}
+function button(text,label,fn){const b=document.createElement('button');b.textContent=text;b.title=label;b.setAttribute('aria-label',label);b.onclick=fn;return b;}
+function render(){
+ checkDay();$('date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+ $('openCount').textContent=s.tasks.filter(t=>t.status!=='done').length;$('doneCount').textContent=s.tasks.filter(t=>t.status==='done').length;$('sessionCount').textContent=s.sessions;
+ $('focused').textContent=s.tasks.find(t=>t.id===s.selected)?.title||'Choose ◎ on a task to focus on it.';
+ $('board').className='board'+(s.view==='list'?' list':'');$('boardView').classList.toggle('active',s.view==='board');$('listView').classList.toggle('active',s.view==='list');$('board').replaceChildren();
+ for(const [status,label] of statuses){
+  const col=document.createElement('section');col.className='column '+status;
+  const items=s.tasks.filter(t=>t.status===status),h=document.createElement('h2');h.textContent=label+' · '+items.length;col.append(h);
+  col.ondragover=e=>{e.preventDefault();col.classList.add('over');};col.ondragleave=()=>col.classList.remove('over');
+  col.ondrop=e=>{e.preventDefault();col.classList.remove('over');const t=s.tasks.find(t=>t.id===e.dataTransfer.getData('text/plain'));if(t){t.status=status;commit();}};
+  if(!items.length){const p=document.createElement('p');p.className='empty';p.textContent=status==='todo'?'Add your first task above.':'Move a task here when you’re ready.';col.append(p);}
+  for(const t of items){
+   const card=document.createElement('article');card.className='card'+(s.selected===t.id?' selected':'');card.draggable=true;card.ondragstart=e=>e.dataTransfer.setData('text/plain',t.id);
+   const title=document.createElement('div');title.className='taskName';title.textContent=t.title;
+   const actions=document.createElement('div');actions.className='actions';
+   const focus=button('◎','Focus on '+t.title,()=>{s.selected=s.selected===t.id?null:t.id;commit();});
+   const select=document.createElement('select');select.setAttribute('aria-label','Status of '+t.title);for(const [v,label]of statuses)select.add(new Option(label,v));select.value=status;select.onchange=()=>{t.status=select.value;commit();};
+   const edit=button('✎','Edit '+t.title,()=>{const v=prompt('Edit task',t.title);if(v?.trim()){t.title=v.trim().slice(0,180);commit();}});
+   const remove=button('×','Delete '+t.title,()=>{if(confirm('Delete this task?'))removeTask(t.id);});
+   actions.append(focus,select,edit,remove);card.append(title,actions);col.append(card);
+  }$('board').append(col);
+ }
+ $('stickyTasks').replaceChildren();
+ for(const t of s.tasks){
+  const row=document.createElement('div');row.className='stickyRow';const label=document.createElement('label'),box=document.createElement('input'),text=document.createElement('span');
+  box.type='checkbox';box.checked=t.status==='done';text.textContent=t.title;box.onchange=()=>{t.status=box.checked?'done':'todo';commit();};label.append(box,text);
+  row.append(label,button('×','Remove '+t.title,()=>removeTask(t.id)));$('stickyTasks').append(row);
+ }
+ if(!s.tasks.length){const p=document.createElement('p');p.className='empty';p.textContent='A small space for your next step.';$('stickyTasks').append(p);}
+ updateTimer();
+}
+function removeTask(id){s.tasks=s.tasks.filter(t=>t.id!==id);if(s.selected===id)s.selected=null;commit();}
+function updateTimer(){
+ if(window.desktop && lastLock!==locked()){
+  lastLock=locked();window.desktop.setFocusLock(lastLock).catch(()=>{lastLock=undefined;});
+ }
+ const n=left(),text=String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+ $('clock').textContent=text;$('miniClock').textContent=text;document.title=text+' · Focus Dock';
+ const label=s.timer.running?'Ⅱ Pause':s.timer.engaged?'▶ Resume':'▶ Start';$('play').textContent=label;$('miniPlay').textContent=label;
+ $('timerLabel').textContent=s.timer.mode==='focus'?'TIME TO FOCUS':'TIME TO RECHARGE';
+ $('closeMini').disabled=locked();$('miniMessage').textContent=locked()?'Focus pinned. Finish the session, or use Main app → Stop / reset.':'Close whenever you like. Your tasks stay saved.';
+ document.querySelectorAll('[data-mode],[data-mini-mode]').forEach(b=>{const mode=b.dataset.mode||b.dataset.miniMode;b.classList.toggle('active',mode===s.timer.mode);b.disabled=!!b.dataset.miniMode&&locked()&&mode!==s.timer.mode;});
+}
+function reset(mode=s.timer.mode){s.timer={mode,left:s.minutes[mode]*60,running:false,end:0,engaged:false};save();updateTimer();}
+function toggle(){if(s.timer.running){s.timer.left=left();s.timer.running=false;s.timer.end=0;}else{if(s.timer.left<=0)s.timer.left=s.minutes[s.timer.mode]*60;s.timer.running=true;s.timer.end=Date.now()+s.timer.left*1000;s.timer.engaged=true;}$('message').textContent='';save();updateTimer();}
+async function showMini(value){if(window.desktop){await window.desktop.setFocusLock(locked());await window.desktop.setMode(value?(note?"note":"compact"):"full");}document.body.classList.toggle("desktopMini",!!window.desktop&&value);mini=value;document.body.classList.toggle('miniOpen',value);$('mini').hidden=!value;render();}
+for(const [form,input]of [['taskForm','taskTitle'],['stickyForm','stickyTitle']])$(form).onsubmit=e=>{e.preventDefault();const title=$(input).value.trim();if(!title)return;s.tasks.push({id:uid(),title,status:'todo'});$(input).value='';commit();};
+$('boardView').onclick=()=>{s.view='board';commit();};$('listView').onclick=()=>{s.view='list';commit();};
+$('play').onclick=toggle;$('miniPlay').onclick=toggle;$('stop').onclick=()=>{reset();$('message').textContent='Session stopped.';};
+$('openMini').onclick=()=>showMini(true);$('mainApp').onclick=()=>showMini(false);$('closeMini').onclick=()=>{if(!locked())showMini(false);};
+$('toggleNote').onclick=async()=>{note=!note;if(window.desktop)await window.desktop.setMode(note?'note':'compact');$('sticky').hidden=!note;$('toggleNote').textContent=note?'Hide note':'Show note';$('toggleNote').setAttribute('aria-expanded',String(note));};
+document.querySelectorAll('[data-mode],[data-mini-mode]').forEach(b=>b.onclick=()=>{const mode=b.dataset.mode||b.dataset.miniMode;if(b.dataset.miniMode&&locked())return;if(s.timer.engaged&&!confirm('Stop the current session and switch modes?'))return;reset(mode);$('message').textContent='';});
+for(const mode of modes){const input=$(mode+'Minutes');input.value=s.minutes[mode];input.onchange=()=>{const n=Number(input.value);if(!Number.isInteger(n)||n<1||n>180){input.value=s.minutes[mode];return;}s.minutes[mode]=n;save();};}
+$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({tasks:s.tasks},null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='focus-dock-tasks.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+setInterval(()=>{if(s.day!==today())render();if(s.timer.running&&left()===0){checkDay();const focus=s.timer.mode==='focus';if(focus)s.sessions++;reset(focus?(s.sessions%4===0?'long':'short'):'focus');$('message').textContent=focus?'Focus complete. Your break is ready.':'Break complete. Ready to focus?';render();}updateTimer();},250);
+render();
+})();
+</script>
+</body>
+</html>
