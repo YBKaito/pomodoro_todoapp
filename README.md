@@ -2,6 +2,10 @@
 
 Blue Windows task board, Pomodoro timer, and floating sticky note.
 
+[Download Focus Dock 1.1.0 for Windows](https://github.com/YBKaito/pomodoro_todoapp/raw/refs/heads/downloads/Focus-Dock-1.1.0-Windows.exe)
+
+The built executable is hosted on the separate `downloads` branch. It is unsigned and has not yet been run on Windows.
+
 ## Run
 
 Requires Node.js 24 and npm. In this repository:
