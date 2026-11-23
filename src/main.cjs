@@ -13,6 +13,7 @@ function positionDock() {
 }
 function createWindow() {
   win = new BrowserWindow({ width: 1140, height: 780, minWidth: 340, minHeight: 220,
+    icon: path.join(__dirname, '../assests/ToDoY.ico'),
     backgroundColor: '#0b1527', autoHideMenuBar: true,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   win.loadFile(path.join(__dirname, 'desktop.html'));

@@ -1,15 +1,15 @@
 const $ = id => document.getElementById(id);
 const { durations, remaining, nextMode, validTask } = FocusCore;
 const day = () => new Date().toLocaleDateString('en-CA');
-let state = { tasks: [], active: null, sessions: 0, date: day(), durations: { ...durations }, view: 'board', timer: { mode: 'focus', remaining: 1500, running: false, endsAt: null } };
+let state = { tasks: [], active: null, sessions: 0, date: day(), durations: { ...durations }, view: 'list', viewCustomized: false, timer: { mode: 'focus', remaining: 1500, running: false, endsAt: null } };
 try {
  const data = JSON.parse(localStorage.getItem('focus-dock-v1'));
  if (data) {
-  state.tasks = Array.isArray(data.tasks) ? data.tasks.filter(validTask) : [];
+  state.tasks = Array.isArray(data.tasks) ? data.tasks.map(normalizeTask).filter(validTask) : [];
   state.active = typeof data.active === 'string' ? data.active : null;
   state.sessions = Number.isInteger(data.sessions) && data.sessions >= 0 ? data.sessions : 0;
   state.date = typeof data.date === 'string' ? data.date : day();
-  state.view = data.view === 'list' ? 'list' : 'board';
+  state.viewCustomized = data.viewCustomized === true; state.view = state.viewCustomized && data.view === 'board' ? 'board' : 'list';
   for (const key of Object.keys(durations)) if (Number.isInteger(data.durations?.[key]) && data.durations[key] >= 1 && data.durations[key] <= 180) state.durations[key] = data.durations[key];
   const t = data.timer;
   if (t && Object.hasOwn(durations, t.mode) && Number.isFinite(t.remaining) && t.remaining >= 0 && t.remaining <= 10800 && typeof t.running === 'boolean' && (!t.running || Number.isFinite(t.endsAt))) state.timer = t;
@@ -18,7 +18,8 @@ try {
 function save() { try { localStorage.setItem('focus-dock-v1', JSON.stringify(state)); $('storage-error').hidden = true; } catch { $('storage-error').hidden = false; } }
 function changeDay() { if (state.date !== day()) { state.date = day(); state.sessions = 0; save(); } }
 function button(text, label, action) { const b = document.createElement('button'); b.textContent = text; b.title = label; b.setAttribute('aria-label', label); b.onclick = action; return b; }
-const statuses = [['todo', 'To do'], ['doing', 'In progress'], ['done', 'Done']];
+const statuses = [['todo', 'To do'], ['done', 'Done']];
+const normalizeTask = task => task?.status === 'doing' ? { ...task, status: 'todo' } : task;
 function render() {
  changeDay();
  $('today').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
@@ -46,13 +47,9 @@ function render() {
    const actions = document.createElement('div'); actions.className = 'task-actions';
    const focus = button('◎', `Focus on ${task.title}`, () => { state.active = state.active === task.id ? null : task.id; save(); render(); }); focus.className = state.active === task.id ? 'focused' : '';
    const select = document.createElement('select'); select.setAttribute('aria-label', `Status of ${task.title}`); for (const [value, text] of statuses) select.add(new Option(text, value)); select.value = status; select.onchange = () => { task.status = select.value; save(); render(); };
-   const edit = button('✎', `Edit ${task.title}`, () => {
-    const input = document.createElement('input'); input.value = task.title; input.maxLength = 180; input.setAttribute('aria-label', 'Edit task title'); title.replaceWith(input); input.focus(); let finished = false;
-    const finish = cancel => { if (finished) return; finished = true; if (!cancel && input.value.trim()) task.title = input.value.trim(); save(); render(); };
-    input.onblur = () => finish(false); input.onkeydown = e => { if (e.key === 'Enter') finish(false); if (e.key === 'Escape') finish(true); };
-   });
+   const done = button('\u2713', `Mark ${task.title} as done`, () => { task.status = 'done'; save(); render(); });
    const remove = button('×', `Delete ${task.title}`, () => { if (!confirm(`Delete “${task.title}”?`)) return; state.tasks = state.tasks.filter(t => t.id !== task.id); if (state.active === task.id) state.active = null; save(); render(); });
-   actions.append(focus, select, edit, remove); card.append(title, actions); col.append(card);
+   actions.append(focus, select, done, remove); card.append(title, actions); col.append(card);
   }
   board.append(col);
  }
@@ -61,7 +58,7 @@ function render() {
 function renderTimer() {
  const seconds = remaining(state.timer);
  $('time').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
- document.title = `${$('time').textContent} · Focus Dock`;
+ document.title = `${$('time').textContent} · ToDoY`;
  $('start').textContent = state.timer.running ? 'Ⅱ Pause' : seconds < state.durations[state.timer.mode] * 60 ? '▶ Resume' : '▶ Start session';
  $('timer-label').textContent = state.timer.mode === 'focus' ? 'TIME TO FOCUS' : 'TIME TO RECHARGE';
  $('timer-hint').textContent = state.timer.mode === 'focus' ? "You've got this." : 'Step away. Breathe. Reset.';
@@ -70,14 +67,28 @@ function renderTimer() {
 function setTimer(mode) { state.timer = { mode, remaining: state.durations[mode] * 60, running: false, endsAt: null }; save(); renderTimer(); }
 function chime() { try { const audio = new AudioContext(); const oscillator = audio.createOscillator(); const gain = audio.createGain(); oscillator.frequency.value = 660; gain.gain.setValueAtTime(.15, audio.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .7); oscillator.connect(gain); gain.connect(audio.destination); oscillator.start(); oscillator.stop(audio.currentTime + .7); oscillator.onended = () => audio.close(); } catch {} }
 $('task-form').onsubmit = e => { e.preventDefault(); const title = $('task-input').value.trim(); if (!title) return; state.tasks.push({ id: crypto.randomUUID(), title, status: 'todo' }); $('task-input').value = ''; save(); render(); };
-for (const view of ['board', 'list']) $(view + '-view').onclick = () => { state.view = view; save(); render(); };
+for (const view of ['board', 'list']) $(view + '-view').onclick = () => { state.view = view; state.viewCustomized = true; save(); render(); };
 $('start').onclick = () => { const t = state.timer; if (t.running) { t.remaining = remaining(t); t.running = false; t.endsAt = null; } else { if (t.remaining <= 0) t.remaining = state.durations[t.mode] * 60; t.endsAt = Date.now() + t.remaining * 1000; t.running = true; } $('announcement').textContent = ''; save(); renderTimer(); };
 $('reset').onclick = () => { setTimer(state.timer.mode); $('announcement').textContent = ''; };
 document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { if (state.timer.running && !confirm('Switch modes and reset the current session?')) return; setTimer(b.dataset.mode); $('announcement').textContent = ''; });
 for (const mode of Object.keys(durations)) { const input = $('duration-' + mode); input.value = state.durations[mode]; input.onchange = () => { const value = Number(input.value); if (!Number.isInteger(value) || value < 1 || value > 180) { input.value = state.durations[mode]; return; } state.durations[mode] = value; if (!state.timer.running && state.timer.mode === mode) setTimer(mode); save(); }; }
 async function windowMode(mode) { if (!window.desktop) { $('announcement').textContent = 'Window controls are available in the desktop app.'; return; } try { const result = await window.desktop.setMode(mode); document.body.classList.toggle('compact', result.compact); $('expand').hidden = !result.compact; $('dock').value = result.dock; } catch { $('announcement').textContent = 'Could not change window mode.'; } }
 $('compact').onclick = () => windowMode('compact'); $('expand').onclick = () => windowMode('full'); $('dock').onchange = e => windowMode(e.target.value);
-$('export').onclick = () => { const blob = new Blob([JSON.stringify({ version: 1, tasks: state.tasks }, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `focus-dock-tasks-${day()}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
-$('import').onchange = async e => { const file = e.target.files[0]; if (!file) return; try { if (file.size > 2_000_000) throw new Error('Choose a file smaller than 2 MB.'); const data = JSON.parse(await file.text()); if (!Array.isArray(data.tasks) || data.tasks.length > 5000 || !data.tasks.every(t => validTask(t) && t.title.length <= 180)) throw new Error('Not a valid Focus Dock task file.'); state.tasks.push(...data.tasks.map(t => ({ id: crypto.randomUUID(), title: t.title.trim(), status: t.status }))); save(); render(); $('announcement').textContent = `Imported ${data.tasks.length} tasks.`; } catch (error) { alert(error.message); } e.target.value = ''; };
+$('export').onclick = () => { const blob = new Blob([JSON.stringify({ version: 1, tasks: state.tasks }, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `todoy-tasks-${day()}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
+function closeImport() { $('importDialog').hidden = true; $('importButton').focus(); }
+function openImport() { $('importFeedback').textContent = ''; $('importDialog').hidden = false; $('importText').focus(); }
+$('importButton').onclick = openImport;
+$('closeImport').onclick = $('cancelImport').onclick = closeImport;
+$('importDialog').onclick = e => { if (e.target === $('importDialog')) closeImport(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('importDialog').hidden) closeImport(); });
+$('confirmImport').onclick = () => {
+ const result = TaskImport.parse($('importText').value);
+ if (!result.tasks.length) { $('importFeedback').textContent = result.skipped ? 'No valid task lines found. Keep each task to 180 characters.' : 'Paste one task per line to import.'; return; }
+ state.tasks.push(...result.tasks.map(task => ({ id: crypto.randomUUID(), title: task.title, status: task.status })));
+ save(); render();
+ const todo = result.tasks.filter(task => task.status === 'todo').length, done = result.tasks.length - todo;
+ $('importStatus').textContent = `Imported ${result.tasks.length}: ${todo} to do, ${done} done${result.skipped ? `; skipped ${result.skipped} line(s)` : ''}.`;
+ $('importText').value = ''; closeImport();
+};
 setInterval(() => { if (state.date !== day()) render(); if (state.timer.running && remaining(state.timer) === 0) { changeDay(); const focus = state.timer.mode === 'focus'; if (focus) state.sessions++; setTimer(nextMode(state.timer.mode, state.sessions)); chime(); render(); $('announcement').textContent = focus ? 'Session complete. Your break is ready.' : 'Break complete. Ready for your next focus?'; } renderTimer(); }, 250);
 render();

@@ -17,7 +17,7 @@
   const widget = document.createElement('section');
   widget.id = 'mini-widget'; widget.hidden = true;
   widget.setAttribute('aria-label', 'Mini focus companion');
-  widget.innerHTML = `<div class="mini-top"><strong>◷ Focus Dock</strong><div><button id="mini-main">Main app</button><button id="mini-close" aria-label="Close mini view">×</button></div></div>
+  widget.innerHTML = `<div class="mini-top"><strong>? ToDoY</strong><div><button id="mini-main">Main app</button><button id="mini-close" aria-label="Close mini view">×</button></div></div>
     <div class="mini-modes"><button data-mini-mode="focus">Pomodoro</button><button data-mini-mode="short">Short break</button><button data-mini-mode="long">Long break</button></div>
     <div class="mini-clock" id="mini-clock" role="timer">25:00</div>
     <div class="mini-controls"><button id="mini-start">Start</button><button id="mini-notes" aria-expanded="true">Hide note</button></div>

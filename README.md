@@ -1,8 +1,8 @@
-# Focus Dock
+# ToDoY
 
 Blue Windows task board, Pomodoro timer, and floating sticky note.
 
-[Download Focus Dock 1.1.0 for Windows](https://github.com/YBKaito/pomodoro_todoapp/raw/refs/heads/downloads/Focus-Dock-1.1.0-Windows.exe)
+[Download ToDoY 1.1.0 for Windows](https://github.com/YBKaito/pomodoro_todoapp/raw/refs/heads/downloads/ToDoY-1.1.0-Windows.exe)
 
 The built executable is hosted on the separate `downloads` branch. It is unsigned and has not yet been run on Windows.
 
@@ -24,7 +24,7 @@ The approved UI is `src/desktop.html`. For browser development, serve `src` and 
 npm run dist:win
 ```
 
-Output: `dist/Focus-Dock-1.1.0-Windows.exe` (portable, Windows x64). Run it without installation. The build is unsigned; Windows may display an unknown publisher warning. Native Windows testing is still required.
+Output: `dist/ToDoY-1.1.0-Windows.exe` (portable, Windows x64). Run it without installation. The build is unsigned; Windows may display an unknown publisher warning. Native Windows testing is still required.
 
 Click **Mini sticky note** to open the always-on-top companion. Drag its header to move it. Hide/show the note independently of the timer. Tasks are shared with the main board and saved in this Windows account's local app data. An active focus session locks both the mini dismiss button and native window close, including while paused. Complete the session or return to **Main app → Stop / reset** to unlock. The OS can still terminate the application. This is not a system-wide lock.
 
@@ -32,7 +32,7 @@ Closing the main app exits. Timer deadlines and tasks survive reopening, but com
 
 ## GitHub downloads
 
-**Build Windows app** can be run manually from GitHub Actions; download its **Focus-Dock-Windows** artifact. Pushing a `v*` tag builds and publishes a GitHub release with the executable attached. This publishes repository content and a release, so publication is a separate action from local building.
+**Build Windows app** can be run manually from GitHub Actions; download its **ToDoY-Windows** artifact. Pushing a `v*` tag builds and publishes a GitHub release with the executable attached. This publishes repository content and a release, so publication is a separate action from local building.
 
 ## Validation
 
