@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Notification } = require('electron');
 const path = require('node:path');
+app.setAppUserModelId('com.ybkaito.todoy');
 let win;
 let expandedBounds;
 let compact = false;
@@ -47,6 +48,19 @@ ipcMain.handle('window-mode', (event, mode) => {
 ipcMain.handle('focus-lock', (event, locked) => {
   if (event.sender !== win?.webContents || typeof locked !== 'boolean') return;
   focusLocked = locked;
+});
+ipcMain.handle('show-notification', (event, title, body, taskId) => {
+  if (event.sender !== win?.webContents || typeof title !== 'string' || typeof body !== 'string' || (taskId !== null && typeof taskId !== 'string')) return false;
+  if (!Notification.isSupported()) return false;
+  const notification = new Notification({ title: title.slice(0, 80), body: body.slice(0, 180), icon: path.join(__dirname, '../assests/ToDoY.ico') });
+  notification.on('click', () => {
+    if (!win) return;
+    if (win.isMinimized()) win.restore();
+    win.show(); win.focus();
+    win.webContents.send('notification-click', typeof taskId === 'string' ? taskId : null);
+  });
+  notification.show();
+  return true;
 });
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

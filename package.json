@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "dist:win": "electron-builder --win portable --x64"
+    "dist:win": "electron-builder --win --x64"
   },
   "devDependencies": {
     "electron": "^42.0.0",
@@ -27,7 +27,7 @@
     },
     "win": {
       "icon": "assests/ToDoY.ico",
-      "target": "portable"
+      "target": ["nsis", "portable"]
     },
     "portable": {
       "artifactName": "ToDoY-${version}-Windows.exe"

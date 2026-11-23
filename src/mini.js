@@ -34,7 +34,7 @@
       const box = document.createElement('input'); box.type = 'checkbox'; box.checked = task.status === 'done';
       const title = document.createElement('span'); title.textContent = task.title;
       label.append(box, title);
-      box.onchange = () => { task.status = box.checked ? 'done' : 'todo'; save(); render(); drawTasks(); };
+      box.onchange = () => { changeTaskStatus(task, box.checked ? 'done' : 'todo'); save(); render(); drawTasks(); };
       const remove = document.createElement('button'); remove.textContent = '×'; remove.setAttribute('aria-label', 'Delete ' + task.title);
       remove.onclick = () => { writeTasks(readTasks().filter(t => t.id !== task.id)); save(); render(); drawTasks(); };
       row.append(label, remove); list.append(row);
@@ -66,7 +66,7 @@
   };
   m('mini-form').onsubmit = e => {
     e.preventDefault(); const title = m('mini-input').value.trim(); if (!title) return;
-    readTasks().push({ id: globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2), title, status: 'todo' });
+    const task = { id: globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2), title, status: 'todo' }; const dueAt = TaskImport.parseDueAt(title); if (dueAt) task.dueAt = dueAt; readTasks().push(task);
     m('mini-input').value = ''; save(); render(); drawTasks();
   };
   m('mini-start').onclick = () => { startButton().click(); update(); };
