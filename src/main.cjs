@@ -13,10 +13,13 @@ function positionDock() {
   win.setBounds({ x: dock === 'left' ? area.x : area.x + area.width - width, y: area.y, width, height: area.height });
 }
 function createWindow() {
+  const iconPath = path.join(__dirname, '../assests/ToDoY.ico');
   win = new BrowserWindow({ width: 1140, height: 780, minWidth: 340, minHeight: 220,
-    icon: path.join(__dirname, '../assests/ToDoY.ico'),
+    icon: iconPath,
     backgroundColor: '#0b1527', autoHideMenuBar: true,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
+  win.setIcon(iconPath);
+  if (process.platform === 'win32') win.setAppDetails({ appId: 'com.ybkaito.todoy', appIconPath: iconPath });
   win.loadFile(path.join(__dirname, 'desktop.html'));
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', event => event.preventDefault());
